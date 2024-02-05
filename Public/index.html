@@ -294,6 +294,56 @@
 
             //the methods of Vue instance
                 methods: {
+                    
+                    // Fetch all lessons with GET
+    fetchAllLessons() {
+        fetch('http://localhost:3000/lessons')
+            .then(response => response.json())
+            .then(data => {
+                // Assuming 'lessons' is the property in your data where you store lessons
+                this.lessons = data;
+            })
+            .catch(error => console.error('Error fetching lessons:', error));
+    },
+
+    // Save a new order with POST
+    saveNewOrder(orderData) {
+        fetch('http://localhost:3000/orders', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(orderData),
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Process the response as needed
+                console.log('Order added:', data);
+                // Optionally, you can fetch all lessons again after adding a new order
+                this.fetchAllLessons();
+            })
+            .catch(error => console.error('Error adding order:', error));
+    },
+
+    // Update available lesson space with PUT
+    updateLessonSpace(lessonId, numberOfSpaces) {
+        fetch(`http://localhost:3000/lessons/${lessonId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ numberOfSpaces }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Process the response as needed
+                console.log('Lesson space updated:', data);
+                // Optionally, you can fetch all lessons again after updating lesson space
+                this.fetchAllLessons();
+            })
+            .catch(error => console.error('Error updating lesson space:', error));
+    },
+
                     addToCart: function (lesson) {
                         if (this.canAddToCart(lesson)) {
                             this.cartLessons.push(lesson.id);
