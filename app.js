@@ -22,7 +22,8 @@ app.use((req, res, next) => {
 });
 
 // Middleware: Static file middleware for lesson images
-app.use('/lesson-images', express.static(path.join(__dirname, 'lesson-images')));
+app.use('/images', express.static('images'));
+
 
 // Connect to MongoDB
 client.connect()
@@ -58,46 +59,63 @@ client.connect()
     });
 
     // Route to add a new lesson
-    app.post('/lessons', async (req, res) => {
-      try {
-        const { topic, price, location, space } = req.body;
-        const result = await lessonsCollection.insertOne({ topic, price, location, space });
-        res.json({ message: 'Lesson added', lessonId: result.insertedId });
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-      }
-    });
+
+app.post('/lessons', async (req, res) => {
+    try {
+      const { subject, price, location, spaces, image } = req.body; // Update the expected data fields
+      const result = await lessonsCollection.insertOne({ subject, price, location, spaces, image });
+      res.json({ message: 'Lesson added', lessonId: result.insertedId });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+  
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     // Route to add a new order
-    app.post('/orders', async (req, res) => {
-      try {
-        const { name, phoneNumber, lessonIDs, numberOfSpaces } = req.body;
-        const result = await ordersCollection.insertOne({ name, phoneNumber, lessonIDs, numberOfSpaces });
-        res.json({ message: 'Order added', orderId: result.insertedId });
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-      }
-    });
+    // Route to add a new order
+app.post('/orders', async (req, res) => {
+    try {
+      const { name, phone, lessons } = req.body; // Update the expected data fields
+      const result = await ordersCollection.insertOne({ name, phone, lessons });
+      res.json({ message: 'Order added', orderId: result.insertedId });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+  
 
     // Route to update available lesson space after an order
-    app.put('/lessons/:id', async (req, res) => {
-      try {
-        const lessonId = req.params.id;
-        // Implement the logic to update available space for the lesson
-        // Example: decrement the available space by numberOfSpaces from the order
-        const updatedLesson = await lessonsCollection.findOneAndUpdate(
-          { _id: lessonId },
-          { $inc: { space: -req.body.numberOfSpaces } },
-          { returnDocument: 'after' }
-        );
-        res.json(updatedLesson);
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-      }
-    });
+        
+      // Route to update available lesson space after an order
+app.put('/lessons/:id', async (req, res) => {
+    try {
+      const lessonId = req.params.id;
+      const { spaces } = req.body; // Update the expected data field
+      // Implement the logic to update available space for the lesson
+      // Example: decrement the available space by 'spaces' from the order
+      const updatedLesson = await lessonsCollection.findOneAndUpdate(
+        { _id: lessonId },
+        { $inc: { spaces: -spaces } }, // Adjust the update based on the expected data field
+        { returnDocument: 'after' }
+      );
+      res.json(updatedLesson);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+  
 
     // Start the Express server
     app.listen(port, () => {
