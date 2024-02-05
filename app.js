@@ -1,6 +1,7 @@
 const express = require('express');
 const { MongoClient } = require('mongodb');
 const bodyParser = require('body-parser');
+const path = require('path'); // Require the 'path' module
 
 const app = express();
 const port = 3000;
@@ -13,6 +14,15 @@ const client = new MongoClient(mongoURI, { useNewUrlParser: true, useUnifiedTopo
 
 // Use body-parser middleware to parse JSON requests
 app.use(bodyParser.json());
+
+// Middleware: Logger
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
+
+// Middleware: Static file middleware for lesson images
+app.use('/lesson-images', express.static(path.join(__dirname, 'lesson-images')));
 
 // Connect to MongoDB
 client.connect()
@@ -65,6 +75,24 @@ client.connect()
         const { name, phoneNumber, lessonIDs, numberOfSpaces } = req.body;
         const result = await ordersCollection.insertOne({ name, phoneNumber, lessonIDs, numberOfSpaces });
         res.json({ message: 'Order added', orderId: result.insertedId });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    });
+
+    // Route to update available lesson space after an order
+    app.put('/lessons/:id', async (req, res) => {
+      try {
+        const lessonId = req.params.id;
+        // Implement the logic to update available space for the lesson
+        // Example: decrement the available space by numberOfSpaces from the order
+        const updatedLesson = await lessonsCollection.findOneAndUpdate(
+          { _id: lessonId },
+          { $inc: { space: -req.body.numberOfSpaces } },
+          { returnDocument: 'after' }
+        );
+        res.json(updatedLesson);
       } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
