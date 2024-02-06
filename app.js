@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 });
 
 // Static file middleware for lesson images
-app.use('/images', express.static('images'));
+app.use((express.static('images')));
 
 // Replace the placeholder URL with your actual MongoDB Atlas connection string
 const mongoURI = 'mongodb+srv://saba14:saba14@cluster0.dobilew.mongodb.net/lessonsHub?retryWrites=true&w=majority';
@@ -129,6 +129,53 @@ client.connect()
         /*         res.status(500).json({ error: 'Internal Server Error' }); */
         /*     } */
         /* }); */
+
+        // Delete object
+app.delete('/lessons/:id', (req,res,next)=>{
+    req.collection.deleteOne(
+        {_id: new ObjectID(req.params.id)},
+        (e,results) => {
+        if (e) return next(e)
+        res.send(results ? {msg: 'sucess'} : {msg: 'error'})
+    })
+})
+
+     // Search object
+app.get('/lessons/:id/search/:keyword', (req, res,next) => {
+    let {keyword} = req.params
+    req.collection.find({}).toArray((err, results) => {
+        if (err) return next(err)
+        let filteredList = results.filter((lesson) => {
+            return lesson.Subject.toLowerCase().match(keyword.toLowerCase()) || lesson.Location.toLowerCase().match(keyword.toLowerCase())
+        });  
+        res.send(filteredList)
+    })
+})
+
+// File middleware
+app.use(function(req,res,next) {
+    var filePath = path.join(__dirname, "images", req.url);
+    fs.stat(filePath, function(err, fileInfo) {
+        if (err) {
+            next();
+            return;
+        }
+        if (fileInfo.isFile()) {
+            res.sendFile(filePath);
+        }
+        else {
+            next();
+        }
+    });
+});
+
+
+app.use(function(req,res, next) {
+    res.status(404);
+    res.send("File not found");
+});
+  
+  
 
         // Start the Express server
         app.listen(port, () => {
