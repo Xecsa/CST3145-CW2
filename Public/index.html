@@ -10,7 +10,7 @@
             <title>Lessons Hub</title>
 
             <!--Favicon-->
-            <link rel="icon" type="image/png" href="images/favicon.png" />
+            <link rel="icon" type="image/png" href="images/Favicon.png" />
 
             <!--Including the CND Link-->
             <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
@@ -28,33 +28,33 @@
 
     </head>
 
-<body>
-    <!--Created a div for Vue element-->
-    <!--Mounting an app-->
-    <div id="app">
+    <body>
+             <!--Created a div for Vue element-->
+             <!--Mounting an app-->
+            <div id="app">
 
-        <!--NavBar-->
-        <nav>
-            <img src="images/Favicon.png">
-            <h1 v-text="sitename"></h1>
+                 <!--NavBar-->
+                 <nav>
+                     <img src="images/Favicon.png">
+                     <h1 v-text="sitename"></h1>
             
-            <!--Search Bar-->
-            <div class="search-bar" >
-                <input type="text" placeholder="Search" v-model.trim="search" @input="customSearch" />
-            </div>
+                    <!--Search Bar-->
+                     <div class="search-bar" >
+                         <input type="text" placeholder="Search" v-model.trim="search" @input="customSearch" />
+                     </div>
 
-            <!--Checkout Button-->
-            <button class="checkout-button" v-on:click="showCheckout" v-bind:disabled="isCartEmpty">
-                <span v-if="!showCheckoutPage" >
-                    {{ cartItemCount}}
-                    <span class="fas fa-cart-plus" ></span>
-                    Checkout
-                </span>
-                <span v-else>
-                    <span class="fas fa-home" ></span>
-                    Home
-                </span>
-            </button>
+                    <!--Checkout Button-->
+                    <button class="checkout-button" v-on:click="showCheckout" v-bind:disabled="isCartEmpty">
+                         <span v-if="!showCheckoutPage" >
+                                {{ cartItemCount}}
+                                <span class="fas fa-cart-plus" ></span>
+                                     Checkout
+                                </span>
+                                <span v-else>
+                                     <span class="fas fa-home" ></span>
+                                     Home
+                        </span>
+                    </button>
 
         </nav>
         <main>
@@ -98,7 +98,7 @@
                 </div>
                 
 
-                    <div v-for="lesson in sortedLessons" :key="lesson.id" class="lesson-card">
+                    <div v-for="lesson in lessons" :key="lesson.id" class="lesson-card">
 
                         <!--the product information-->
                         <div id="details">
@@ -118,7 +118,7 @@
                                 </div>
 
                                 <div><p>
-                                    <i class="fas fa-users" ></i><span>  Available Space: {{ lesson.displaySpace - cartCount (lesson.id) }}</span></p>
+                                    <i class="fas fa-users" ></i><span>  Available Space: {{ lesson.displaySpace - cartCount (lesson._id) }}</span></p>
                                 </div>
 
                                 <!--rating-->
@@ -168,7 +168,7 @@
                         <h2>Shopping Cart</h2>
                             <div id="cart-items" class="cart-items">
                                 <div class="cart-item" v-for="lessonId in cartLessons" :key="lessonId">
-                                    <div v-for="lesson in lessons" :key="lesson.id" v-if="lesson.id === lessonId" class="lesson-card">
+                                    <div v-for="lesson in lessons" :key="lesson.id" v-if="lesson._id === lessonId" class="lesson-card">
                                         <div class="lesson-details" >
                                             <!--Lesson image-->
                                             <div class="cart-item-image-container">
@@ -206,7 +206,7 @@
 
 
                                             <!--'Remove form cart' button-->
-                                            <button class="remove-from-cart-button" @click="removeFromCart(lesson.id)">
+                                            <button class="remove-from-cart-button" @click="removeFromCart(lesson._id)">
                                                 Remove
                                             </button>    
                                         </div>   
@@ -272,7 +272,7 @@
                     search: '',
                     cartLessons:[],
                     lessons: lesson, // Assuming you have included lesson.js
-
+                    numberOfSpaces: 1,
                     //order details
                     order: {
                         firstname: '',
@@ -286,68 +286,82 @@
                     displayCart: [],
                     computedDisplaySpace: function () {
                             return this.lessons.map(lesson => {
-                            const countInCart = this.cartCount(lesson.id);
+                            const countInCart = this.cartCount(lesson._id);
                             return lesson.displaySpace - countInCart;
                     });
                 },
             },
 
-            //the methods of Vue instance
-                methods: {
+
+            mounted(){
+                this.fetchAllLessons();
+            },
+
+                //the methods of Vue instance
+            methods: {
                     
-                    // Fetch all lessons with GET
-    fetchAllLessons() {
-        fetch('http://localhost:3000/lessons')
-            .then(response => response.json())
-            .then(data => {
-                // Assuming 'lessons' is the property in your data where you store lessons
-                this.lessons = data;
-            })
-            .catch(error => console.error('Error fetching lessons:', error));
-    },
+                // Fetch all lessons with GET
+                fetchAllLessons() {
+                    fetch('http://localhost:3000/lessons')
+                    .then(response => response.json())
+                    .then(data => {
+                    console.log(data)
+                    // Assuming 'lessons' is the property in your data where you store lessons
+                    this.lessons = data;
+                      })
+                    .catch(error => console.error('Error fetching lessons:', error));
+                },
 
-    // Save a new order with POST
-    saveNewOrder(orderData) {
-        fetch('http://localhost:3000/orders', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(orderData),
-        })
-            .then(response => response.json())
-            .then(data => {
-                // Process the response as needed
-                console.log('Order added:', data);
+                // Save a new order with POST
+                saveNewOrder(orderData) {
+                     fetch('http://localhost:3000/orders', {
+                         method: 'POST',
+                         headers: {
+                            'Content-Type': 'application/json',
+                        },
+                         body: JSON.stringify(orderData),
+                     })
+                         .then(response => response.json())
+                         .then(data => {
+                         // Gives the confirmation message  
+                         this.orderConfirmationMessage = 'Order submitted. Thank you!';
+ 
+                //Displays an alert
+                     alert('Order submitted. Thank you!');
+
+
                 // Optionally, you can fetch all lessons again after adding a new order
-                this.fetchAllLessons();
-            })
-            .catch(error => console.error('Error adding order:', error));
-    },
-
-    // Update available lesson space with PUT
-    updateLessonSpace(lessonId, numberOfSpaces) {
-        fetch(`http://localhost:3000/lessons/${lessonId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
+                     this.fetchAllLessons();
+                     for (let i = 0; i < this.cartLessons.length; i++) {
+                         this.updateLessonSpace(this.cartLessons[i], this.numberOfSpaces)
+                     }
+                })
+                     .catch(error => console.error('Error adding order:', error));
             },
-            body: JSON.stringify({ numberOfSpaces }),
-        })
-            .then(response => response.json())
-            .then(data => {
-                // Process the response as needed
-                console.log('Lesson space updated:', data);
-                // Optionally, you can fetch all lessons again after updating lesson space
-                this.fetchAllLessons();
-            })
-            .catch(error => console.error('Error updating lesson space:', error));
-    },
+
+                // Update available lesson space with PUT
+                    updateLessonSpace(lessonId, numberOfSpaces) {
+                        fetch(`http://localhost:3000/lessons/${lessonId}`, {
+                                  method: 'PUT',
+                            headers: {
+                                 'Content-Type': 'application/json',
+                             },
+                            body: JSON.stringify({ space: numberOfSpaces }),
+                        })
+                         .then(response => response.json())
+                         .then(data => {
+                         // Process the response as needed
+                         console.log('Lesson space updated:', data);
+                         // Optionally, you can fetch all lessons again after updating lesson space
+                         this.fetchAllLessons();
+                         })
+                        .catch(error => console.error('Error updating lesson space:', error));
+                    },
 
                     addToCart: function (lesson) {
                         if (this.canAddToCart(lesson)) {
-                            this.cartLessons.push(lesson.id);
-                            this.cart.push(lesson.id) 
+                            this.cartLessons.push(lesson._id);
+                            this.cart.push(lesson._id) 
                             this.isCartEmpty = false; //sets to false when a lesson is added
                         }
                      },
@@ -358,18 +372,15 @@
                     canPlaceOrder() {
 
                         const isNameValid = /^(?!\s*$)[a-zA-Z.+\s'-]+$/.test(this.name);
-                        const isPhoneValid = /^(?!\s*$)[0-9.+\s'-]+$/.test(this.phone) && this.phone.length === 12;
+                        const isPhoneValid = /^(?!\s*$)[0-9.+\s'-]+$/.test(this.phone) && this.phone.length > 5;
                         return isNameValid && isPhoneValid;
 
                     },
 
                     submitForm() {
+                        let orderData = {lessons: this.cartLessons, name: this.name, phone: this.phone,numberOfSpaces: this.numberOfSpaces}
+                        this.saveNewOrder(orderData);
 
-                       // Gives the confirmation message  
-                       this.orderConfirmationMessage = 'Order submitted. Thank you!';
-                       
-                       //Displays an alert
-                       alert('Order submitted. Thank you!');
                     },
 
                     cartCount(id) {
@@ -383,22 +394,23 @@
                     },
 
                     canAddToCart(lesson) {
-                        const availableSpace = lesson.displaySpace - (this.availableSpaceMap[lesson.id] || 0);
+                        const availableSpace = lesson.displaySpace - (this.availableSpaceMap[lesson._id] || 0);
                         return availableSpace > 0;
                     },
 
                     //Search 
                     customSearch(){
-                        //Gets the lowercase search query
-                        const query = this.search.toLowerCase();
-
-                        //Filters lessons based on the search query
-                        return this.lessons.filter(
-                            (lesson) =>
-                            lesson.subject.toLowerCase().includes(query) ||
-                            lesson.location.toLowerCase().includes(query) ||
-                            lesson.price.toString().includes(query)
-                        );
+                        fetch(`http://localhost:3000/search?keyword=${this.search}`)
+                            .then(res => {
+                                 return res.json()
+                                 })
+                            .then(data => {
+                                 this.lessons = data
+                            })
+                            .catch(err => {
+                                 this.lessons = []
+                                 console.log(`unable to get lessons: ${err}`)
+                            })
                     },
 
                     removeFromCart(lessonId){
@@ -420,10 +432,10 @@
 
                     returnToLessonList(lessonId){
                         //Finds the lesson with the given lessonId in the lessons array
-                        const lessonToAddBack = this.lessons.find(lesson => lesson.id === lessonId);
+                        const lessonToAddBack = this.lessons.find(lesson => lesson._id === lessonId);
 
                         // Checks if the lesson is not already in the lessons array before adding it
-                        if(!this.lessons.some(lesson => lesson.id === lessonId )){
+                        if(!this.lessons.some(lesson => lesson._id === lessonId )){
                             //Adds the lesson back to the lessons array
                             this.lessons.push(lessonToAddBack);
 
@@ -431,6 +443,9 @@
 
                     },
                 },
+                
+
+                
 
                 computed: {
                     // Computed property to calculate available space for each lesson
@@ -470,8 +485,8 @@
                         // sorting spaces
                         if (this.sort.by === 'availability') {
                             return this.sort.order === 'asc' ?
-                                lessonsArr.sort((a, b) => (a.displaySpace - this.cartCount(a.id)) - (b.displaySpace - this.cartCount(b.id))) :
-                                lessonsArr.sort((a, b) => (b.displaySpace - this.cartCount(b.id)) - (a.displaySpace - this.cartCount(a.id)));
+                                lessonsArr.sort((a, b) => (a.displaySpace - this.cartCount(a._id)) - (b.displaySpace - this.cartCount(b._id))) :
+                                lessonsArr.sort((a, b) => (b.displaySpace - this.cartCount(b._id)) - (a.displaySpace - this.cartCount(a._id)));
                         }
 
                         // sorting subject
