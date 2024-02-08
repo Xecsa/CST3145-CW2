@@ -6,13 +6,13 @@
             <meta http-equiv="X-UA-Compatible" content="IE=edge">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-            <!--Defineing the title of the page-->
+            <!--Title of the page-->
             <title>Lessons Hub</title>
 
             <!--Favicon-->
             <link rel="icon" type="image/png" href="images/Favicon.png" />
 
-            <!--Including the CND Link-->
+            <!--Vue.js library-->
             <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
 
             <!--Font-Awesome Link-->
@@ -29,8 +29,8 @@
     </head>
 
     <body>
-             <!--Created a div for Vue element-->
-             <!--Mounting an app-->
+             <!-- Vue app container -->
+             <!-- Mounting an app -->
             <div id="app">
 
                  <!--NavBar-->
@@ -64,26 +64,32 @@
 
                 <!-- Sorting section -->
                 <div class="sort-section" style="display: flex; flex-wrap: wrap; justify-content: space-between; width: 100%; ">
+                    <!-- Sort by-->
                     <label>Sort by:</label>
+                    <!--Sort by Subject-->
                     <div class="sort-options">
                         <div>
                             <input type="radio" id="sortBySubject" value="subject" v-model="sort.by">
                             <label for="sortBySubject">Subject</label>
                         </div>
+                        <!--Sort by Location-->
                         <div>
                             <input type="radio" id="sortByLocation" value="location" v-model="sort.by">
                             <label for="sortByLocation">Location</label>
                         </div>
+                        <!-- Sort by Price -->
                         <div>
                             <input type="radio" id="sortByPrice" value="price" v-model="sort.by">
                             <label for="sortByPrice">Price</label>
                         </div>
+                        <!-- Sort by Availability-->
                         <div>
                             <input type="radio" id="sortByAvailability" value="availability" v-model="sort.by">
                             <label for="sortByAvailability">Availability</label>
                         </div>
                     </div>
                 
+                    <!-- Order -->
                     <label>Order:</label>
                     <div class="sort-options" >
                         <div>
@@ -98,13 +104,15 @@
                 </div>
                 
 
+                     <!--Displaying lessons-->                           
                     <div v-for="lesson in lessons" :key="lesson.id" class="lesson-card">
 
-                        <!--the product information-->
+                        <!-- Lesson details -->
                         <div id="details">
+                            <!-- Lesson information -->
                             <div id="lesson-details">
 
-                            
+                                <!-- Subject -->
                                 <div class="lesson-icons"><p>
                                     <i class="fa-solid fa-book"></i><span> Subject: {{ lesson.subject }}</span></p>
                                 </div>
@@ -138,6 +146,7 @@
                                             Add to cart
                                 </button>
 
+                                <!-- Availability messages -->
                                 <br>
                                 <span v-if="computedDisplaySpace[index] === 0">
                                             All out!
@@ -152,6 +161,7 @@
                                 </span>
                             </div>
 
+                            <!-- Lesson image -->
                             <div id="image">
                                 <figure>
                                     <img id="imgsize" v-bind:src="lesson.image" alt="Lesson Image">
@@ -164,9 +174,11 @@
 
             <!--Checkout Page-->
                 <div v-else>
+                    <!-- Shopping Cart -->
                     <div id="Checkout-cart">
                         <h2>Shopping Cart</h2>
                             <div id="cart-items" class="cart-items">
+                                <!-- Cart items -->
                                 <div class="cart-item" v-for="lessonId in cartLessons" :key="lessonId">
                                     <div v-for="lesson in lessons" :key="lesson.id" v-if="lesson._id === lessonId" class="lesson-card">
                                         <div class="lesson-details" >
@@ -176,11 +188,13 @@
                                                     <img class="cart-item-image" v-bind:src="lesson.image" >
                                                 </figure>
                                             </div>
+                                            <!-- Lesson details -->
                                             <div class="lesson-icons">
                                                 <p>
                                                     <i class="fa-solid fa-book"></i><span> Subject: {{ lesson.subject }}</span>
                                                 </p>
                                             </div>
+                                            <!-- Rating -->
                                             <div class="lesson-icons">
                                                 <p>
                                                     <i class="fa-sharp fa-solid fa-location-dot"></i><span> Location: {{ lesson.location}} </span>
@@ -220,7 +234,7 @@
                         {{ orderConfirmationMessage}}
                     </div>
 
-                    <!--the checkout form -->
+                    <!-- checkout form -->
                     <div id="checkout-form">
                         <h2>Checkout</h2>
                         <form @submit.prevent="submitForm" >
@@ -257,10 +271,13 @@
                         <h1 >SABA SHAIKH M00850503</h1>
                     </footer>
 
-    
+            
+            <!-- Vue.js script-->
             <script>
+                // Vue instance initialization
                 var webstore = new Vue({
                 el: '#app',
+                //Data properties
                 data: {
                     sitename: "Lessons Hub",
                     showLesson: true,
@@ -284,6 +301,7 @@
                     cart: [],
                     showPlaceOrder: false,
                     displayCart: [],
+                    //Computed property for displaying available space
                     computedDisplaySpace: function () {
                             return this.lessons.map(lesson => {
                             const countInCart = this.cartCount(lesson._id);
@@ -291,17 +309,18 @@
                     });
                 },
             },
-
+            // Mounted hook
 
             mounted(){
                 this.fetchAllLessons();
             },
 
-                //the methods of Vue instance
+            //the methods of Vue instance
             methods: {
                     
                 // Fetch all lessons with GET
                 fetchAllLessons() {
+                    //Fetch data from API
                     fetch('http://localhost:3000/lessons')
                     .then(response => response.json())
                     .then(data => {
@@ -314,6 +333,7 @@
 
                 // Save a new order with POST
                 saveNewOrder(orderData) {
+                    // Send POST request
                      fetch('http://localhost:3000/orders', {
                          method: 'POST',
                          headers: {
@@ -326,7 +346,7 @@
                          // Gives the confirmation message  
                          this.orderConfirmationMessage = 'Order submitted. Thank you!';
  
-                //Displays an alert
+                    //Displays an alert
                      alert('Order submitted. Thank you!');
 
 
@@ -339,7 +359,7 @@
                      .catch(error => console.error('Error adding order:', error));
             },
 
-                // Update available lesson space with PUT
+                    // Update available lesson space with PUT
                     updateLessonSpace(lessonId, numberOfSpaces) {
                         fetch(`http://localhost:3000/lessons/${lessonId}`, {
                                   method: 'PUT',
@@ -358,6 +378,7 @@
                         .catch(error => console.error('Error updating lesson space:', error));
                     },
 
+                    // Add lesson to cart
                     addToCart: function (lesson) {
                         if (this.canAddToCart(lesson)) {
                             this.cartLessons.push(lesson._id);
@@ -365,10 +386,11 @@
                             this.isCartEmpty = false; //sets to false when a lesson is added
                         }
                      },
+                     // Toggle checkout page
                     showCheckout() {
                             this.showCheckoutPage = !this.showCheckoutPage;
                     },
-
+                    // Check if order can be placed
                     canPlaceOrder() {
 
                         const isNameValid = /^(?!\s*$)[a-zA-Z.+\s'-]+$/.test(this.name);
@@ -376,13 +398,14 @@
                         return isNameValid && isPhoneValid;
 
                     },
-
+                    // Submit form
                     submitForm() {
                         let orderData = {lessons: this.cartLessons, name: this.name, phone: this.phone,numberOfSpaces: this.numberOfSpaces}
                         this.saveNewOrder(orderData);
 
                     },
 
+                    // Count items in the cart
                     cartCount(id) {
                         let count = 0;
                         for (let i = 0; i < this.cart.length; i++) {
@@ -393,12 +416,13 @@
                         return count;
                     },
 
+                    // Check if lesson can be added to cart
                     canAddToCart(lesson) {
                         const availableSpace = lesson.displaySpace - (this.availableSpaceMap[lesson._id] || 0);
                         return availableSpace > 0;
                     },
 
-                    //Search 
+                    //Search for lessons
                     customSearch(){
                         fetch(`http://localhost:3000/search?keyword=${this.search}`)
                             .then(res => {
@@ -413,6 +437,7 @@
                             })
                     },
 
+                    // Remove item from cart
                     removeFromCart(lessonId){
                         //Remove the lesson from the cartLessons array
                         const index = this.cartLessons.indexOf(lessonId);
@@ -420,6 +445,7 @@
                             this.cartLessons.splice(index, 1);
                         }
                     
+                        // Remove lesson from cart array
                         const cartIndex = this.cart.indexOf(lessonId);
                         if (cartIndex !== -1){
                             this.cart.splice(cartIndex, 1);
@@ -430,6 +456,7 @@
 
                     },
 
+                    // Return lesson to lesson list
                     returnToLessonList(lessonId){
                         //Finds the lesson with the given lessonId in the lessons array
                         const lessonToAddBack = this.lessons.find(lesson => lesson._id === lessonId);
@@ -446,7 +473,7 @@
                 
 
                 
-
+                // Computed properties
                 computed: {
                     // Computed property to calculate available space for each lesson
                     availableSpaceMap(){
@@ -460,6 +487,7 @@
                         return spaceMap;
                     },
 
+                    // Compute cart item count
                     cartItemCount: function () {
                         return this.cart.length;
                     },
