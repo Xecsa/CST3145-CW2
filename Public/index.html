@@ -323,7 +323,7 @@
                 // Fetch all lessons with GET
                 fetchAllLessons() {
                     //Fetch data from API
-                    fetch('http://localhost:3000/lessons')
+                    fetch('http://cw2lessonshub-env.eba-nueppm9d.eu-west-2.elasticbeanstalk.com/lessons')
                     .then(response => response.json())
                     .then(data => {
                     console.log(data)
@@ -336,7 +336,7 @@
                 // Save a new order with POST
                 saveNewOrder(orderData) {
                     // Send POST request
-                     fetch('http://localhost:3000/orders', {
+                     fetch('http://cw2lessonshub-env.eba-nueppm9d.eu-west-2.elasticbeanstalk.com/orders', {
                          method: 'POST',
                          headers: {
                             'Content-Type': 'application/json',
@@ -363,7 +363,7 @@
 
                     // Update available lesson space with PUT
                     updateLessonSpace(lessonId, numberOfSpaces) {
-                        fetch(`http://localhost:3000/lessons/${lessonId}`, {
+                        fetch(`http://cw2lessonshub-env.eba-nueppm9d.eu-west-2.elasticbeanstalk.com/lessons/${lessonId}`, {
                                   method: 'PUT',
                             headers: {
                                  'Content-Type': 'application/json',
@@ -426,7 +426,7 @@
 
                     //Search for lessons
                     customSearch(){
-                        fetch(`http://localhost:3000/search?keyword=${this.search}`)
+                        fetch(`http://cw2lessonshub-env.eba-nueppm9d.eu-west-2.elasticbeanstalk.com/search?keyword=${this.search}`)
                             .then(res => {
                                  return res.json()
                                  })
