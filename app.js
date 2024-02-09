@@ -160,7 +160,7 @@ client.connect()
   
 
         // Start the Express server
-        app.listen(port, function() {
+        app.listen(port, () => {
             console.log(`Server is running on http://localhost:${port}`);
         });
     })
