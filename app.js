@@ -1,34 +1,44 @@
+// Import required modules
 const express = require('express');
 const { MongoClient, ObjectID } = require('mongodb');
+
+// CORS middleware for enabling cross-origin requests
 const cors = require('cors');
+
+// Middleware for parsing request bodies
 const bodyParser = require('body-parser');
+
+
 const path = require('path');
 const fs = require('fs');
 
+// Initialize Express app
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors());
+//Middleware setup
+app.use(cors()); // Enable CORS
 app.use(bodyParser.json());
 
+// Set Access-Control-Allow-Origin header for all responses
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     next();
 });
 
-// Static file middleware for lesson images
+// Set Access-Control-Allow-Origin header for all responses
 app.use((express.static('Public')));
 
-// Logger
+// Logger middleware
 app.use((req, res, next) => {
-    console.log(`${req.method} ${req.url}`);
+    console.log(`${req.method} ${req.url}`); // Log request method and URL
     next();
 });
 
-// Static file middleware for lesson images
-// app.use(('/images',express.static('Public/images')));
 
-// Replace the placeholder URL with your actual MongoDB Atlas connection string
+
+
+// Database connection URI
 const mongoURI = 'mongodb+srv://saba14:saba14@cluster0.dobilew.mongodb.net/lessonsHub?retryWrites=true&w=majority';
 
 // Create a MongoDB client
@@ -49,8 +59,9 @@ client.connect()
             res.send('Select a collection, e.g, /collection/messages')
         })
 
+        // Middleware for handling dynamic collection name
         app.param('', (req,res,next,collectionName) =>{
-            req.collection = db.collection(collectionName)
+            req.collection = db.collection(collectionName) // Set the collection based on thr URL parameter
             return next()
         })
 
@@ -69,7 +80,7 @@ client.connect()
         app.get('/orders', async (req, res) => {
             try {
                 const orders = await ordersCollection.find().toArray();
-                res.json(orders);
+                res.json(orders);  // Send the orders an JSON response
             } catch (error) {
                 console.error(error);
                 res.status(500).json({ error: 'Internal Server Error' });
