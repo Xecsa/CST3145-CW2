@@ -1,9 +1,14 @@
 // Import required modules
+// Import required modules
 const express = require('express');
 const { MongoClient, ObjectID } = require('mongodb');
 
 // CORS middleware for enabling cross-origin requests
+
+// CORS middleware for enabling cross-origin requests
 const cors = require('cors');
+
+// Middleware for parsing request bodies
 
 // Middleware for parsing request bodies
 const bodyParser = require('body-parser');
@@ -20,7 +25,7 @@ const port = process.env.PORT || 3000;
 app.use(cors()); // Enable CORS
 app.use(bodyParser.json());
 
-// Set Access-Control-Allow-Origin header for all responses
+//Set Access-Control-Allow-Origin header for all responses
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     next();
@@ -55,6 +60,7 @@ client.connect()
 
         // Define routes
 
+        //Route to get all lessons
         app.get('/', (req,res,next) => {
             res.send('Select a collection, e.g, /collection/messages')
         })
@@ -102,7 +108,7 @@ client.connect()
             }
         });
 
-
+        // Route to update lesson space by decrementing it
         app.put ('/lessons/:id', (req, res, next) => {
             req.collection = db.collection("lessons")
             req.collection.update(
@@ -116,7 +122,7 @@ client.connect()
             })
 
 
-            // Search object
+        // Search route to filter lessons based on keyword
         app.get('/search', (req, res,next) => {
            req.collection = db.collection("lessons")
            let {keyword} = req.query
@@ -134,7 +140,7 @@ client.connect()
 
 
 
-         // File middleware
+         // File middleware to serve static files from Public/images directory
         app.use(function(req,res,next) {
              var filePath = path.join(__dirname, "Public/images", req.url);
              fs.stat(filePath, function(err, fileInfo) {
@@ -151,7 +157,7 @@ client.connect()
             });
         });
 
-
+        //Middleware to handle 404 - File Not Found
         app.use(function(req,res, next) {
              res.status(404);
              res.send("File not found");
